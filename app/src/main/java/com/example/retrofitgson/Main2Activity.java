@@ -14,6 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Main2Activity extends AppCompatActivity {
     private TextView tvResult;
+    private jsonPlaceHolderAPI jsonPlaceHolderAPI;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +28,47 @@ public class Main2Activity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        jsonPlaceHolderAPI jsonPlaceHolderAPI = retrofit.create(com.example.retrofitgson.jsonPlaceHolderAPI.class);
+        jsonPlaceHolderAPI = retrofit.create(com.example.retrofitgson.jsonPlaceHolderAPI.class);
+
+//        getPosts();
+        getComments();
+
+    }
+
+    private void getComments() {
+        Call<List<Comment>> call = jsonPlaceHolderAPI.getComments();
+
+        call.enqueue(new Callback<List<Comment>>() {
+            @Override
+            public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
+                if (!response.isSuccessful()) { //can have error 404
+                    tvResult.setText("Code: " + response.code());
+                    return;
+                }
+                List<Comment> comments = response.body();
+
+                for (Comment comment : comments) {
+                    String text = "";
+                    text += "ID: " + comment.getId() + "\n";
+                    text += "Post ID: " + comment.getPostID() + "\n";
+                    text += "Name: " + comment.getName() + "\n";
+                    text += "E-mail: " + comment.getEmail() + "\n";
+                    text += "Text: " + comment.getText() + "\n\n";
+
+                    tvResult.append(text);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Comment>> call, Throwable t) {
+                tvResult.setText(t.getMessage());
+            }
+        });
+    }
+
+    private void getPosts() {
         Call<List<Post>> call = jsonPlaceHolderAPI.getPosts();
+
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
@@ -51,9 +92,7 @@ public class Main2Activity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Post>> call, Throwable t) {
-                tvResult.setText(t.getMessage());
             }
         });
-
     }
 }

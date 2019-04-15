@@ -9,5 +9,6 @@ public interface jsonPlaceHolderAPI {
     @GET("posts")
     Call<List<Post>> getPosts();
 
-
+    @GET("posts/1/comments")
+    Call<List<Comment>> getComments();
 }
