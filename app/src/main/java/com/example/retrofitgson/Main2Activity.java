@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,13 +32,14 @@ public class Main2Activity extends AppCompatActivity {
 
         jsonPlaceHolderAPI = retrofit.create(com.example.retrofitgson.jsonPlaceHolderAPI.class);
 
-        getPosts();
-//        getComments();
+//        getPosts();
+        getComments();
 
     }
 
     private void getComments() {
-        Call<List<Comment>> call = jsonPlaceHolderAPI.getComments(3);
+        Call<List<Comment>> call = jsonPlaceHolderAPI
+                .getComments("posts/3/comments");
 
         call.enqueue(new Callback<List<Comment>>() {
             @Override
@@ -67,7 +70,12 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void getPosts() {
-        Call<List<Post>> call = jsonPlaceHolderAPI.getPosts(4, "id", "desc");
+        Map<String, String> paramaters = new HashMap<>();
+        paramaters.put("userId", "1");
+        paramaters.put("_sort", "id");
+        paramaters.put("_order", "desc");
+
+        Call<List<Post>> call = jsonPlaceHolderAPI.getPosts(paramaters);
 
         call.enqueue(new Callback<List<Post>>() {
             @Override
